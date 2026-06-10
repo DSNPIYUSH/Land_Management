@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS | Unified Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#020617',
+                        accent: '#facc15',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; }
+        /* Custom scrollbar for sidebar */
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; } 
+        .nav-link.active {
+            background: white;
+            color: #020617;
+            border-left: 4px solid #facc15;
+        }
+        
+        .zoomed { transform: scale(1.8); cursor: zoom-out; }
+    </style>
+</head>
+<body class="h-screen overflow-hidden flex flex-col text-slate-300">
+
+    <header class="h-20 flex items-center justify-between px-8 bg-slate-900/80 backdrop-blur-md border-b border-accent/30 z-50">
+        <div class="w-1/4"></div>
+        <h1 class="text-xl font-black uppercase tracking-widest text-accent text-center flex-1">
+            Land Management System
+        </h1>
+        <div class="flex items-center gap-4 w-1/4 justify-end">
+            <div class="text-right">
+                <p class="text-xs font-extrabold">Sai Naga Piyush</p>
+                <p class="text-[10px] text-slate-500">ID: 24EU08079</p>
+            </div>
+            <img src="pic.jpg" class="w-12 h-12 rounded-xl border-2 border-accent object-cover bg-slate-800" alt="Admin">
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <nav class="w-64 bg-slate-900/30 border-r border-white/5 p-6 overflow-y-auto custom-scroll">
+            <ul class="space-y-1" id="main-nav">
+                <li><button data-section="home" class="nav-link active w-full text-left px-4 py-3 rounded-lg text-sm font-semibold transition-all">Home</button></li>
+                <li><button data-section="abstract" class="nav-link w-full text-left px-4 py-3 rounded-lg text-sm font-semibold transition-all">Abstract</button></li>
+                <li><button data-section="relational" class="nav-link w-full text-left px-4 py-3 rounded-lg text-sm font-semibold transition-all">Relational Model</button></li>
+                
+                <li class="pt-4">
+                    <span class="px-4 text-[10px] uppercase tracking-wider font-bold text-slate-500">Database Tools</span>
+                    <ul class="mt-2 ml-4 border-l border-white/10 space-y-1">
+                        <li><a href="#" class="block px-4 py-2 text-xs hover:text-white transition-colors">DDL Commands</a></li>
+                        <li><a href="#" class="block px-4 py-2 text-xs hover:text-white transition-colors">DML Commands</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <main class="flex-1 p-10 overflow-y-auto bg-[url('background.png')] bg-cover bg-center">
+            <section id="section-home" class="content-section bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="text-accent text-xs font-bold uppercase mb-6">Milestones</div>
+                <div class="grid gap-4">
+                    <div class="bg-darkBg/60 p-5 rounded-2xl hover:border-accent/50 border border-transparent transition-all">
+                        <h3 class="text-accent text-sm font-bold">WEEK 1: ABSTRACT</h3>
+                        <p class="text-xs text-slate-400 mt-1">Strategic project boundaries defined.</p>
+                    </div>
+                </div>
+            </section>
+            <section id="section-abstract" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-accent text-xs font-bold uppercase">Abstract</span>
+                    <span class="text-[10px] text-slate-500">CLICK PREVIEW FOR FULLSCREEN</span>
+                </div>
+                <div class="rounded-2xl overflow-hidden h-[70vh] bg-black border border-white/10" onclick="toggleFullscreen('pdfViewer')">
+                    <iframe id="pdfViewer" src="abstract.pdf#toolbar=0" class="w-full h-full"></iframe>
+                </div>
+            </section>
+            <section id="section-relational" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="text-accent text-xs font-bold uppercase mb-6 text-center">Relational Model</div>
+                <div class="flex justify-center overflow-hidden rounded-2xl bg-black/40 p-4">
+                    <img src="landManagement.png" id="zoomImage" class="max-h-[70vh] object-contain transition-transform duration-300 cursor-zoom-in" onclick="this.classList.toggle('zoomed')">
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // Dynamic Tab Switching logic
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.content-section');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const target = link.getAttribute('data-section');
+
+                // Update UI
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                // Switch Sections
+                sections.forEach(s => s.classList.add('hidden'));
+                document.getElementById(`section-${target}`).classList.remove('hidden');
+            });
+        });
+
+        function toggleFullscreen(id) {
+            const el = document.getElementById(id);
+            if (el.requestFullscreen) el.requestFullscreen();
+        }
+    </script>
+</body>
+</html>

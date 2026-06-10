@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Land Management System | DBMS Project</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#020617',
+                        accent: '#f4c95d',
+                        sage: '#9bbb7d',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            color-scheme: dark;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(155, 187, 125, 0.12), transparent 32%),
+                radial-gradient(circle at top right, rgba(244, 201, 93, 0.10), transparent 28%),
+                linear-gradient(180deg, #07111b 0%, #0b1623 100%);
+        }
+
+        .display-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 999px;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(5, 11, 17, 0.78);
+            backdrop-filter: blur(18px);
+        }
+
+        .brand-mark {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 1rem;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #f4c95d, #9bbb7d);
+            color: #07111b;
+            font: 700 0.95rem 'Space Grotesk', sans-serif;
+            letter-spacing: 0.08em;
+        }
+
+        .sidebar-shell {
+            background: rgba(7, 17, 27, 0.64);
+            backdrop-filter: blur(18px);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .sidebar-intro {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(160deg, rgba(16, 30, 46, 0.96), rgba(8, 16, 26, 0.88));
+            border-radius: 1.5rem;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+        }
+
+        .eyebrow {
+            color: #9bbb7d;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.28em;
+            font-weight: 800;
+        }
+
+        .nav-link {
+            width: 100%;
+            display: block;
+            text-align: left;
+            padding: 0.82rem 1rem;
+            border-radius: 1rem;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #c8d3df;
+            font-size: 0.84rem;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateX(3px);
+        }
+
+        .nav-link.active {
+            color: #fff4d0;
+            background: rgba(244, 201, 93, 0.12);
+            border-color: rgba(244, 201, 93, 0.22);
+            box-shadow: inset 4px 0 0 #f4c95d;
+        }
+
+        .main-stage {
+            position: relative;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .ambient-orb {
+            position: absolute;
+            border-radius: 999px;
+            filter: blur(70px);
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        .orb-one {
+            width: 16rem;
+            height: 16rem;
+            background: rgba(155, 187, 125, 0.16);
+            top: 1.5rem;
+            right: 8%;
+        }
+
+        .orb-two {
+            width: 14rem;
+            height: 14rem;
+            background: rgba(244, 201, 93, 0.12);
+            bottom: 12%;
+            left: 4%;
+        }
+
+        .page-banner {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            margin-bottom: 1.5rem;
+            padding: 1.25rem 1.5rem;
+            border-radius: 1.6rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(10, 20, 32, 0.78);
+            backdrop-filter: blur(18px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+        }
+
+        .page-title {
+            color: #ffffff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.55rem, 2.6vw, 2.5rem);
+            font-weight: 700;
+            margin-top: 0.55rem;
+        }
+
+        .page-copy {
+            max-width: 46rem;
+            color: #9eb0c4;
+            line-height: 1.75;
+            margin-top: 0.45rem;
+        }
+
+        .banner-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .content-section {
+            background: rgba(12, 22, 35, 0.74);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 2rem;
+            padding: clamp(1.25rem, 2vw, 2rem);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+            transition: opacity 0.25s ease-in-out;
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            color: #ffffff;
+            font: 700 clamp(1.35rem, 2vw, 1.9rem) 'Space Grotesk', sans-serif;
+            margin-top: 0.55rem;
+        }
+
+        .section-copy {
+            color: #8ea0b4;
+            max-width: 44rem;
+            line-height: 1.7;
+            margin-top: 0.45rem;
+        }
+
+        .helper-note,
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.72rem 1rem;
+            border-radius: 999px;
+            border: 1px solid rgba(244, 201, 93, 0.22);
+            background: rgba(244, 201, 93, 0.1);
+            color: #fff1c2;
+            font-size: 0.74rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .hero-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-card,
+        .timeline-board,
+        .metric-card,
+        .sql-card,
+        .milestone-card {
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            background: linear-gradient(160deg, rgba(16, 30, 46, 0.96), rgba(8, 16, 26, 0.88));
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.16);
+        }
+
+        .hero-card {
+            border-radius: 1.8rem;
+            padding: 1.7rem;
+        }
+
+        .hero-card h2 {
+            color: #ffffff;
+            font: 700 clamp(2rem, 4vw, 3.3rem) 'Space Grotesk', sans-serif;
+            line-height: 1.03;
+            margin-top: 0.85rem;
+        }
+
+        .hero-card p {
+            color: #9fb1c4;
+            line-height: 1.8;
+            margin-top: 1rem;
+            max-width: 38rem;
+        }
+
+        .hero-visual {
+            position: relative;
+            overflow: hidden;
+            min-height: 320px;
+            border-radius: 1.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #08131d;
+        }
+
+        .hero-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(7, 17, 27, 0.08), rgba(7, 17, 27, 0.85));
+        }
+
+        .hero-caption {
+            position: absolute;
+            left: 1.2rem;
+            right: 1.2rem;
+            bottom: 1.2rem;
+            padding: 1rem 1.1rem;
+            border-radius: 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(7, 17, 27, 0.72);
+            backdrop-filter: blur(12px);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-card {
+            border-radius: 1.5rem;
+            padding: 1.15rem;
+        }
+
+        .metric-value {
+            color: #ffffff;
+            font: 700 1.8rem 'Space Grotesk', sans-serif;
+        }
+
+        .metric-label {
+            color: #8ea0b4;
+            font-size: 0.68rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            margin-top: 0.3rem;
+        }
+
+        .metric-note {
+            color: #74879b;
+            font-size: 0.82rem;
+            line-height: 1.65;
+            margin-top: 0.7rem;
+        }
+
+        .timeline-board {
+            border-radius: 1.8rem;
+            padding: 1.5rem;
+        }
+
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .milestone-card {
+            border-radius: 1.25rem;
+            padding: 1.1rem;
+        }
+
+        .milestone-step {
+            color: #9bbb7d;
+            font-size: 0.68rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+
+        .milestone-card h4 {
+            color: #ffffff;
+            font-weight: 800;
+            margin-top: 0.7rem;
+        }
+
+        .milestone-card p {
+            color: #8ea0b4;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-top: 0.55rem;
+        }
+
+        .viewer-frame {
+            height: 80vh;
+            min-height: 520px;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #020617;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+        }
+
+        .viewer-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .assignment-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        .assignment-card {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(160deg, rgba(16, 30, 46, 0.92), rgba(8, 16, 26, 0.86));
+            border-radius: 1.5rem;
+            padding: 1.1rem;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.14);
+        }
+
+        .assignment-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .assignment-frame {
+            height: 78vh;
+            min-height: 520px;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #020617;
+            margin-top: 0.85rem;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+        }
+
+        .assignment-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .pdf-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.68rem 0.95rem;
+            border-radius: 999px;
+            border: 1px solid rgba(244, 201, 93, 0.2);
+            background: rgba(244, 201, 93, 0.08);
+            color: #fff1c2;
+            font-size: 0.74rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .sql-gallery {
+            display: grid;
+            gap: 1.2rem;
+        }
+
+        .sql-card {
+            border-radius: 1.5rem;
+            padding: 1.25rem;
+        }
+
+        .card-title {
+            color: #f4c95d;
+            font-size: 0.74rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            text-align: center;
+            margin-bottom: 0.95rem;
+        }
+
+        .sql-card img {
+            width: 100%;
+            max-height: 75vh;
+            display: block;
+            object-fit: contain;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.26);
+            cursor: zoom-in;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .sql-card img:hover {
+            box-shadow: 0 18px 28px rgba(0, 0, 0, 0.18);
+        }
+
+        .image-stack {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .terminal-shot {
+            margin: 0;
+            padding: 1.15rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: #05070b;
+            color: #f8fafc;
+            font: 700 0.9rem/1.55 "Courier New", monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .zoomed {
+            position: relative;
+            z-index: 3;
+            transform: scale(1.28);
+            cursor: zoom-out;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar-shell {
+                border-right: 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            }
+
+            .hero-layout,
+            .timeline-grid,
+            .assignment-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main-stage {
+                padding: 1rem;
+            }
+
+            .page-banner {
+                position: static;
+                padding: 1rem;
+            }
+
+            .content-section,
+            .hero-card,
+            .timeline-board,
+            .metric-card,
+            .sql-card,
+            .milestone-card {
+                padding: 1rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .helper-note,
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        .hidden { display: none; }
+        .active { background-color: #e2e8f0; font-weight: bold; }
+        .nav-link { cursor: pointer; padding: 10px; display: block; border-radius: 5px; }
+        .main-stage { height: 80vh; overflow-y: auto; padding: 20px; }
+        .card { border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin-bottom: 20px; background: white; }
+        code { background: #f4f4f4; padding: 5px 10px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; display: block; margin-top: 10px; }
+        .math-sym { font-family: "Times New Roman", Times, serif; font-style: italic; font-size: 1.2em; color: #2563eb; 
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-slate-300">
+
+    <header class="topbar px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-4 min-w-0">
+                <div class="brand-mark">LMS</div>
+                <div class="min-w-0">
+                    <p class="eyebrow">DBMS Project Portfolio</p>
+                    <h1 class="display-font text-lg sm:text-xl font-bold text-white truncate">Land Management System</h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 backdrop-blur-md">
+                <div class="text-right">
+                    <p class="text-xs font-extrabold text-white">Sai Naga Piyush</p>
+                    <p class="text-[11px] text-slate-400">ID: 24EU08079</p>
+                </div>
+                <img src="images/pic.jpg" class="h-11 w-11 rounded-xl border border-accent/60 object-cover bg-slate-900" alt="Student profile">
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 lg:grid lg:grid-cols-[290px_minmax(0,1fr)] min-h-0">
+        <nav class="sidebar-shell p-4 sm:p-6 overflow-y-auto custom-scroll">
+            <div class="sidebar-intro">
+                <p class="eyebrow">Project Navigator</p>
+                <h2 class="display-font text-2xl font-bold text-white mt-3">One clean place for every query and diagram.</h2>
+                <p class="text-sm leading-7 text-slate-400 mt-3">Abstract, ER design, commands, queries, and constraints in one clean view.</p>
+            </div>
+
+            <ul class="space-y-1" id="main-nav">
+                <li><button data-section="home" class="nav-link active">HOME</button></li>
+                <li><button data-section="home-assignments" class="nav-link">HOME ASSIGNMENT</button></li>
+                <li><button data-section="abstract" class="nav-link">ABSTRACT</button></li>
+                <li><button data-section="relational" class="nav-link">ER DIAGRAM</button></li>
+
+                <li class="pt-4">
+                    <span class="eyebrow block px-1 mb-3">DDL Commands</span>
+                    <div class="space-y-1">
+                        <button data-section="ddl-create" class="nav-link">CREATE</button>
+                        <button data-section="ddl-alter" class="nav-link">ALTER</button>
+                        <button data-section="ddl-drop" class="nav-link">DROP</button>
+                    </div>
+                </li>
+
+                <li class="pt-4">
+                    <span class="eyebrow block px-1 mb-3">DML Commands</span>
+                    <div class="space-y-1">
+                        <button data-section="dml-insert" class="nav-link">INSERT</button>
+                        <button data-section="dml-update" class="nav-link">UPDATE</button>
+                        <button data-section="dml-delete" class="nav-link">DELETE</button>
+                    </div>
+                </li>
+
+                <li class="pt-4">
+                    <span class="eyebrow block px-1 mb-3">Query Operators</span>
+                    <div class="space-y-1">
+                        <button data-section="like-operator" class="nav-link">LIKE OPERATOR</button>
+                        <button data-section="group-by" class="nav-link">GROUP BY</button>
+                        <button data-section="order-by" class="nav-link">ORDER BY</button>
+                        <button data-section="having" class="nav-link">HAVING</button>
+                    </div>
+                </li>
+
+                <li class="pt-4">
+                    <span class="eyebrow block px-1 mb-3">Nested Queries</span>
+                    <div class="space-y-1">
+                        <button data-section="nested-in" class="nav-link">IN</button>
+                        <button data-section="nested-not-in" class="nav-link">NOT IN</button>
+                        <button data-section="nested-exists" class="nav-link">EXISTS</button>
+                        <button data-section="nested-all" class="nav-link">ALL</button>
+                        <button data-section="nested-any" class="nav-link">ANY</button>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="pt-6">
+                <span class="eyebrow block px-1 mb-3">Integrity Constraints</span>
+                <ul class="space-y-1">
+                    <li><button data-section="integrity-null" class="nav-link">NULL</button></li>
+                    <li><button data-section="integrity-not-null" class="nav-link">NOT NULL</button></li>
+                    <li><button data-section="integrity-unique" class="nav-link">UNIQUE</button></li>
+                    <li><button data-section="integrity-primary-key" class="nav-link">PRIMARY KEY</button></li>
+                    <li><button data-section="integrity-foreign-key" class="nav-link">FOREIGN KEY</button></li>
+                </ul>
+            </div>
+
+            <div class="pt-6">
+                <span class="eyebrow block px-1 mb-3">Aggregate Operators</span>
+                <ul class="space-y-1">
+                    <li><button data-section="aggregate-sum" class="nav-link">SUM</button></li>
+                    <li><button data-section="aggregate-count" class="nav-link">COUNT</button></li>
+                    <li><button data-section="aggregate-average" class="nav-link">AVERAGE</button></li>
+                    <li><button data-section="aggregate-maximum" class="nav-link">MAXIMUM</button></li>
+                    <li><button data-section="aggregate-minimum" class="nav-link">MINIMUM</button></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="main-stage custom-scroll">
+            <div class="ambient-orb orb-one"></div>
+            <div class="ambient-orb orb-two"></div>
+            <div class="page-banner">
+                <p id="section-kicker" class="eyebrow">Project Overview</p>
+                <div class="banner-row">
+                    <div>
+                        <h2 id="section-title" class="page-title">Land Management System</h2>
+                        <p id="section-description" class="page-copy">A compact walkthrough of the database project and its SQL results.</p>
+                    </div>
+                </div>
+            </div>
+          
+            <section id="section-home" class="content-section">
+                <div class="hero-layout">
+                    <div class="hero-card">
+                        <p class="eyebrow">Database Project Showcase</p>
+                        <h2>Clean, short, and easy to review.</h2>
+                        <p>Every topic is grouped into simple cards so the project feels more like a polished presentation than a folder of loose screenshots.</p>
+                    </div>
+
+                    <div class="hero-visual">
+                        <img src="images/Background.png" alt="Land themed project banner">
+                        <div class="hero-overlay"></div>
+                        <div class="hero-caption">
+                            <p class="eyebrow">Visual Direction</p>
+                            <p class="text-sm text-slate-200 leading-7 mt-2">One visual on top, focused SQL evidence below.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">7</div>
+                        <div class="metric-label">Tables Designed</div>
+                        <p class="metric-note">Owner, land, ownership, ownership history, registration, registration in, and date.</p>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">3</div>
+                        <div class="metric-label">DDL Actions</div>
+                        <p class="metric-note">Create, alter, and drop commands organized into separate walkthroughs.</p>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">3</div>
+                        <div class="metric-label">DML Actions</div>
+                        <p class="metric-note">Insert, update, and delete operations documented with results.</p>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">14+</div>
+                        <div class="metric-label">Query Screens</div>
+                        <p class="metric-note">Operators, nested queries, and integrity checks captured for review.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-board">
+                    <div class="section-head !mb-0">
+                        <div>
+                            <p class="eyebrow">Project Roadmap</p>
+                            <h3 class="section-title">Project flow at a glance.</h3>
+                            <p class="section-copy">Short milestone cards instead of long paragraphs.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-grid">
+                        <div class="milestone-card">
+                            <p class="milestone-step">Week 1</p>
+                            <h4>Abstract</h4>
+                            <p>The project objective and land management context are introduced clearly for evaluators.</p>
+                        </div>
+                        <div class="milestone-card">
+                            <p class="milestone-step">Week 2</p>
+                            <h4>ER Diagram</h4>
+                            <p>The relational view connects entities and prepares the schema design stage.</p>
+                        </div>
+                        <div class="milestone-card">
+                            <p class="milestone-step">Week 3</p>
+                            <h4>DDL and DML Commands</h4>
+                            <p>Create, alter, drop, insert, update, and delete workflows are documented as proof of implementation.</p>
+                        </div>
+                        <div class="milestone-card">
+                            <p class="milestone-step">Week 4</p>
+                            <h4>LIKE Operator</h4>
+                            <p>Pattern-based filtering is demonstrated with multiple result screenshots.</p>
+                        </div>
+                        <div class="milestone-card">
+                            <p class="milestone-step">Week 5</p>
+                            <h4>GROUP BY Clause</h4>
+                            <p>Aggregation logic is presented as a focused query example.</p>
+                        </div>
+                        <div class="milestone-card">
+                            <p class="milestone-step">Week 6</p>
+                            <h4>ORDER BY Clause</h4>
+                            <p>Sorting behavior is included as a dedicated output section for clarity.</p>
+                        </div>
+                        <div class="milestone-card">
+                            <p class="milestone-step">Week 7</p>
+                            <h4>HAVING Clause</h4>
+                            <p>Post-aggregation filtering completes the SQL operator showcase.</p>
+                        </div>
+                        <div class="milestone-card">
+                            <p class="milestone-step">Extension</p>
+                            <h4>Nested Queries and Constraints</h4>
+                            <p>IN, EXISTS, ALL, ANY, NULL, UNIQUE, and key constraints round out the project deliverables.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="section-home-assignments" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Home Assignments</p>
+                        <h3 class="section-title">All four assignment PDFs in one place.</h3>
+                        <p class="section-copy">Each assignment opens in a larger reader below, with a direct open option.</p>
+                    </div>
+                </div>
+                <div class="assignment-grid">
+                    <div class="assignment-card">
+                        <div class="assignment-head">
+                            <p class="text-accent text-xs font-bold uppercase tracking-[0.18em]">Home Assignment 1</p>
+                            <a href="assignments/Homeassignment-1.pdf" target="_blank" class="pdf-btn">Open PDF</a>
+                        </div>
+                        <div class="assignment-frame">
+                            <iframe src="assignments/Homeassignment-1.pdf#toolbar=1&navpanes=0&view=FitH"></iframe>
+                        </div>
+                    </div>
+                    <div class="assignment-card">
+                        <div class="assignment-head">
+                            <p class="text-accent text-xs font-bold uppercase tracking-[0.18em]">Home Assignment 2</p>
+                            <a href="assignments/Homeassignment-2.pdf" target="_blank" class="pdf-btn">Open PDF</a>
+                        </div>
+                        <div class="assignment-frame">
+                            <iframe src="assignments/Homeassignment-2.pdf#toolbar=1&navpanes=0&view=FitH"></iframe>
+                        </div>
+                    </div>
+                    <div class="assignment-card">
+                        <div class="assignment-head">
+                            <p class="text-accent text-xs font-bold uppercase tracking-[0.18em]">Home Assignment 3</p>
+                            <a href="assignments/Homeassignment-3.pdf" target="_blank" class="pdf-btn">Open PDF</a>
+                        </div>
+                        <div class="assignment-frame">
+                            <iframe src="assignments/Homeassignment-3.pdf#toolbar=1&navpanes=0&view=FitH"></iframe>
+                        </div>
+                    </div>
+                    <div class="assignment-card">
+                        <div class="assignment-head">
+                            <p class="text-accent text-xs font-bold uppercase tracking-[0.18em]">Home Assignment 4</p>
+                            <a href="assignments/DBMS home assignment 4.pdf" target="_blank" class="pdf-btn">Open PDF</a>
+                        </div>
+                        <div class="assignment-frame">
+                            <iframe src="assignments/DBMS home assignment 4.pdf#toolbar=1&navpanes=0&view=FitH"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="section-abstract" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Project Abstract</p>
+                        <h3 class="section-title">Problem statement and project scope.</h3>
+                        <p class="section-copy">Larger reader with browser controls for easier reading.</p>
+                    </div>
+                    <div class="flex gap-3 flex-wrap">
+                        <a href="abstract.pdf" target="_blank" class="pdf-btn">Open PDF</a>
+                        <button onclick="toggleFullscreen('pdfViewer')" class="action-btn">Maximize View</button>
+                    </div>
+                </div>
+                <div class="viewer-frame">
+                    <iframe id="pdfViewer" src="abstract.pdf#toolbar=1&navpanes=0&view=FitH" class="w-full h-full"></iframe>
+                </div>
+            </section>
+            
+            <section id="section-relational" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">Database Relational Model</div>
+                            <img src="images/landManagement.png" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-ddl-create" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">CREATION OF OWNER TABLE</div>
+                        <img src="images/owner_ddl.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">CREATION OF LAND TABLE</div>
+                        <img src="images/land_ddl.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">CREATION OF OWNERSHIP TABLE</div>
+                        <img src="images/ownership_ddl.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">CREATION OF OWNERSHIP HISTORY TABLE</div>
+                        <img src="images/ownership_history_ddl.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">CREATION OF REGISTRATION TABLE</div>
+                        <img src="images/registration_ddl.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">CREATION OF REGISTRATION IN TABLE</div>
+                        <img src="images/registration_in_ddl.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">CREATION OF DATE TABLE</div>
+                        <img src="images/date_ddl.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+             <section id="section-ddl-alter" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">DROP USING ALTER</div>
+                        <img src="images/alter,drop.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">MODIFY USING ALTER</div>
+                        <img src="images/modify.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">CHANGE USING ALTER</div>
+                        <img src="images/change.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">ADD USING ALTER</div>
+                        <img src="images/ownership.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <img src="images/ownership_history.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <img src="images/registration.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-ddl-drop" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">DROP YEAR TABLE</div>
+                        <img src="images/year_drop.png" onclick="this.classList.toggle('zoomed')" alt="Drop Table Diagram">
+                    </div>
+                </div>
+             </section>
+            <section id="section-dml-insert" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">INSERT VALUES IN LAND</div>
+                        <img src="images/land_dml.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">INSERT VALUES IN OWNER</div>
+                        <img src="images/owner_dml.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">INSERT VALUES IN OWNERSHIP</div>
+                        <img src="images/ownership_dml.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                    <div class="sql-card">
+                        <img src="images/ownership.1.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-dml-update" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">UPDATE</div>
+                        <img src="images/update.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-dml-delete" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">DELETE</div>
+                        <div class="image-stack">
+                                <img src="images/delete.png" onclick="this.classList.toggle('zoomed')">
+                                <img src="images/delete.1.png" onclick="this.classList.toggle('zoomed')">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="section-like-operator" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">LIKE OPERATOR</div>
+                        <div class="image-stack">
+                                <img src="images/Like.png" onclick="this.classList.toggle('zoomed')">
+                                <img src="images/like.1.png" onclick="this.classList.toggle('zoomed')">
+                                <img src="images/like.2.png" onclick="this.classList.toggle('zoomed')">
+                                <img src="images/like.3.png" onclick="this.classList.toggle('zoomed')">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="section-group-by" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">GROUP BY</div>
+                        <img src="images/groupby.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-order-by" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">ORDER BY</div>
+                        <img src="images/orderby.png" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-having" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">HAVING</div>
+                        <img src="images/having.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-nested-in" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">IN</div>
+                        <img src="images/in.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-nested-not-in" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">NOT IN</div>
+                        <img src="images/notin.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-nested-exists" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">EXISTS</div>
+                        <img src="images/EXISTS.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-nested-all" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">ALL</div>
+                        <img src="images/all.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-nested-any" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">ANY</div>
+                        <img src="images/any.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-integrity-null" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">NULL</div>
+                        <img src="images/null.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-integrity-not-null" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">NOT NULL</div>
+                        <img src="images/notnull.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-integrity-unique" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">UNIQUE</div>
+                        <img src="images/unique.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-integrity-primary-key" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">PRIMARY KEY</div>
+                        <img src="images/primarykey.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-integrity-foreign-key" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">FOREIGN KEY</div>
+                        <img src="images/foreignkey.png" id="zoomImage" onclick="this.classList.toggle('zoomed')">
+                    </div>
+                </div>
+            </section>
+            <section id="section-aggregate-sum" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">SUM</div>
+                        <pre class="terminal-shot">mysql&gt; SELECT SUM(value) AS Total_Market_Value FROM Land;
++--------------------+
+| Total_Market_Value |
++--------------------+
+|              90000 |
++--------------------+
+1 row in set (0.02 sec)</pre>
+                    </div>
+                </div>
+            </section>
+            <section id="section-aggregate-count" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">COUNT</div>
+                        <pre class="terminal-shot">mysql&gt; SELECT COUNT(land_ID) AS Total_Properties FROM Land WHERE value = 'Available';
++------------------+
+| Total_Properties |
++------------------+
+|                0 |
++------------------+
+1 row in set (0.01 sec)</pre>
+                    </div>
+                </div>
+            </section>
+            <section id="section-aggregate-average" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">AVERAGE</div>
+                        <pre class="terminal-shot">mysql&gt; SELECT AVG(Area) AS Average_Size FROM Land WHERE Land_Type = 'Residential';
++--------------+
+| Average_Size |
++--------------+
+|         NULL |
++--------------+
+1 row in set (0.01 sec)</pre>
+                    </div>
+                </div>
+            </section>
+            <section id="section-aggregate-maximum" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">MAXIMUM</div>
+                        <pre class="terminal-shot">mysql&gt; SELECT MAX(value) AS Highest_Price FROM Land WHERE Location = 'vijayawada';
++---------------+
+| Highest_Price |
++---------------+
+|         45000 |
++---------------+
+1 row in set (0.00 sec)</pre>
+                    </div>
+                </div>
+            </section>
+            <section id="section-aggregate-minimum" class="content-section hidden bg-slate-800/20 p-8 rounded-3xl border border-white/5">
+                <div class="sql-gallery">
+                    <div class="sql-card">
+                        <div class="text-accent text-xs font-bold uppercase mb-6 text-center">MINIMUM</div>
+                        <pre class="terminal-shot">mysql&gt; SELECT MIN(value) AS Lowest_Price FROM Land WHERE Location = 'vijayawada';
++--------------+
+| Lowest_Price |
++--------------+
+|        45000 |
++--------------+
+1 row in set (0.00 sec)</pre>
+                    </div>
+                </div>
+            </section>
+            <header style="padding: 20px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+        <small id="section-kicker" style="color: #64748b; text-transform: uppercase;"></small>
+        <h1 id="section-title" style="margin: 5px 0;"></h1>
+        <p id="section-description" style="color: #475569;"></p>
+    </header>
+
+    <div style="display: flex;">
+        <nav style="width: 250px; border-right: 1px solid #e2e8f0; padding: 10px;">
+            <div class="nav-link" data-section="home">Project Overview</div>
+            <div class="nav-link" data-section="relational-algebra">Relational Algebra</div>
+            <div class="nav-link" data-section="ddl-create">CREATE Statements</div>
+            <div class="nav-link" data-section="aggregate-sum">SUM Operator</div>
+            </nav>
+
+        <main class="main-stage" style="flex-grow: 1;">
+            
+            <div id="section-home" class="content-section hidden">
+                <div class="card">
+                    <h3>Welcome to the Land Management System</h3>
+                    <p>Use the sidebar to navigate through the database schema, SQL commands, and mathematical theory.</p>
+                </div>
+            </div>
+
+            <div id="section-relational-algebra" class="content-section hidden">
+                <div class="card">
+                    <h3 style="border-bottom: 2px solid #2563eb; padding-bottom: 10px;">Theoretical Operations</h3>
+                    
+                    <div style="margin-top: 20px;">
+                        <h4 class="math-sym">Selection (σ)</h4>
+                        <p>Filtering rows based on specific conditions (e.g., Finding Hyderabad plots).</p>
+                        <code>σ<sub>Location = 'Hyderabad'</sub> (Land_Parcels)</code>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <h4 class="math-sym">Projection (π)</h4>
+                        <p>Selecting specific columns (e.g., viewing only ID and Price).</p>
+                        <code>π<sub>Plot_ID, Price</sub> (Land_Parcels)</code>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <h4 class="math-sym">Natural Join (⋈)</h4>
+                        <p>Combining tables (e.g., linking Owners to their Land).</p>
+                        <code>Owners ⋈<sub>Owners.ID = Land.OwnerID</sub> Land_Parcels</code>
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 15px; background: #eff6ff; border-left: 4px solid #2563eb;">
+                        <strong>Complex Query: High Value Owners</strong>
+                        <p>Goal: Names of owners with land priced over 500,000.</p>
+                        <code style="background: white;">π<sub>Name</sub> ( σ<sub>Price > 500000</sub> (Owners ⋈ Land_Parcels) )</code>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-ddl-create" class="content-section hidden">
+                <div class="card">
+                    <h3>Schema Setup</h3>
+                    <code>CREATE TABLE Land_Parcels (...);</code>
+                </div>
+    <script>
+        const sectionMeta = {
+            home: {
+                kicker: 'Project Overview',
+                title: 'Land Management System',
+                description: 'A compact walkthrough of the database project and its SQL results.'
+            },
+            'home-assignments': {
+                kicker: 'Home Assignments',
+                title: 'Assignment PDF collection',
+                description: 'Four DBMS home assignments available directly inside the page.'
+            },
+            abstract: {
+                kicker: 'Project Abstract',
+                title: 'Written summary',
+                description: 'Short project overview in PDF form.'
+            },
+            relational: {
+                kicker: 'Schema Design',
+                title: 'Entity relationship model',
+                description: 'Full database structure in one diagram.'
+            },
+            'ddl-create': {
+                kicker: 'Schema Setup',
+                title: 'CREATE statements',
+                description: 'Creation queries for the main tables.'
+            },
+            'ddl-alter': {
+                kicker: 'Schema Changes',
+                title: 'ALTER operations',
+                description: 'Modify, change, and add operations.'
+            },
+            'ddl-drop': {
+                kicker: 'Schema Removal',
+                title: 'DROP command demo',
+                description: 'Single drop table example.'
+            },
+            'dml-insert': {
+                kicker: 'Data Entry',
+                title: 'INSERT operations',
+                description: 'Insert results for the core tables.'
+            },
+            'dml-update': {
+                kicker: 'Data Change',
+                title: 'UPDATE operation',
+                description: 'Single update query result.'
+            },
+            'dml-delete': {
+                kicker: 'Data Removal',
+                title: 'DELETE operations',
+                description: 'Delete query examples.'
+            },
+            'like-operator': {
+                kicker: 'Operator Demo',
+                title: 'LIKE operator',
+                description: 'Pattern matching results.'
+            },
+            'group-by': {
+                kicker: 'Aggregation',
+                title: 'GROUP BY clause',
+                description: 'Grouped query example.'
+            },
+            'order-by': {
+                kicker: 'Sorting',
+                title: 'ORDER BY clause',
+                description: 'Sorting query output.'
+            },
+            having: {
+                kicker: 'Post Aggregation Filter',
+                title: 'HAVING clause',
+                description: 'Filtered grouped result.'
+            },
+            'nested-in': {
+                kicker: 'Nested Query',
+                title: 'IN clause',
+                description: 'Nested IN example.'
+            },
+            'nested-not-in': {
+                kicker: 'Nested Query',
+                title: 'NOT IN clause',
+                description: 'Nested NOT IN example.'
+            },
+            'nested-exists': {
+                kicker: 'Nested Query',
+                title: 'EXISTS clause',
+                description: 'Nested EXISTS example.'
+            },
+            'nested-all': {
+                kicker: 'Nested Query',
+                title: 'ALL clause',
+                description: 'Nested ALL example.'
+            },
+            'nested-any': {
+                kicker: 'Nested Query',
+                title: 'ANY clause',
+                description: 'Nested ANY example.'
+            },
+            'integrity-null': {
+                kicker: 'Integrity Constraint',
+                title: 'NULL handling',
+                description: 'NULL constraint example.'
+            },
+            'integrity-not-null': {
+                kicker: 'Integrity Constraint',
+                title: 'NOT NULL rule',
+                description: 'NOT NULL constraint example.'
+            },
+            'integrity-unique': {
+                kicker: 'Integrity Constraint',
+                title: 'UNIQUE rule',
+                description: 'UNIQUE constraint example.'
+            },
+            'integrity-primary-key': {
+                kicker: 'Integrity Constraint',
+                title: 'PRIMARY KEY rule',
+                description: 'PRIMARY KEY constraint example.'
+            },
+            'integrity-foreign-key': {
+                kicker: 'Integrity Constraint',
+                title: 'FOREIGN KEY rule',
+                description: 'FOREIGN KEY constraint example.'
+            },
+            'aggregate-sum': {
+                kicker: 'Aggregate Operator',
+                title: 'SUM operator',
+                description: 'Total market value query.'
+            },
+            'aggregate-count': {
+                kicker: 'Aggregate Operator',
+                title: 'COUNT operator',
+                description: 'Property count query.'
+            },
+            'aggregate-average': {
+                kicker: 'Aggregate Operator',
+                title: 'AVERAGE operator',
+                description: 'Average area query.'
+            },
+            'aggregate-maximum': {
+                kicker: 'Aggregate Operator',
+                title: 'MAXIMUM operator',
+                description: 'Highest value query.'
+            },
+            'aggregate-minimum': {
+                kicker: 'Aggregate Operator',
+                title: 'MINIMUM operator',
+                description: 'Lowest value query.'
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.content-section');
+            const kicker = document.getElementById('section-kicker');
+            const title = document.getElementById('section-title');
+            const description = document.getElementById('section-description');
+
+            function showSection(target) {
+                navLinks.forEach((link) => {
+                    link.classList.toggle('active', link.getAttribute('data-section') === target);
+                });
+
+                sections.forEach((section) => {
+                    section.classList.add('hidden');
+                });
+
+                const targetEl = document.getElementById(`section-${target}`);
+                if (targetEl) {
+                    targetEl.classList.remove('hidden');
+                }
+
+                const meta = sectionMeta[target] || sectionMeta.home;
+                kicker.textContent = meta.kicker;
+                title.textContent = meta.title;
+                description.textContent = meta.description;
+            }
+
+            navLinks.forEach((link) => {
+                link.addEventListener('click', () => {
+                    showSection(link.getAttribute('data-section'));
+                });
+            });
+
+            showSection('home');
+        });
+        function toggleFullscreen(id) {
+            const el = document.getElementById(id);
+            if (el.requestFullscreen) {
+                el.requestFullscreen();
+            } else if (el.webkitRequestFullscreen) { // Safari
+                el.webkitRequestFullscreen();
+            }
+        }
+
+        // 2. Navigation & UI Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.content-section');
+            const kicker = document.getElementById('section-kicker');
+            const title = document.getElementById('section-title');
+            const description = document.getElementById('section-description');
+            const mainStage = document.querySelector('.main-stage');
+
+            function showSection(target) {
+                // Update Active Link State
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('data-section') === target);
+                });
+
+                // Hide all sections
+                sections.forEach(section => section.classList.add('hidden'));
+
+                // Show target section
+                const targetEl = document.getElementById(`section-${target}`);
+                if (targetEl) {
+                    targetEl.classList.remove('hidden');
+                    mainStage.scrollTop = 0;
+                }
+
+                // Update Header Text
+                const meta = sectionMeta[target] || sectionMeta.home;
+                kicker.textContent = meta.kicker;
+                title.textContent = meta.title;
+                description.textContent = meta.description;
+            }
+
+            // Add Click Events
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const target = link.getAttribute('data-section');
+                    showSection(target);
+                });
+            });
+
+            // Initialize
+            showSection('home');
+        });
+    </script>
+</body>
+</html>

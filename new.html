@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Land Management System | Unified Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --accent-yellow: #facc15;
+            --sidebar-width: 260px;
+        }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        body {
+            background: url('background.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow: hidden;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 4%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(250, 204, 21, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 75px;
+        }
+        .header-spacer { 
+            flex: 1; 
+        }
+        .header-title {
+             flex: 2; 
+             text-align: center; 
+        }
+        .header-title h1 { 
+            font-size: 1.3rem; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em;
+            color: var(--accent-yellow);
+        }
+        .user-profile {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        .admin-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            border: 2px solid var(--accent-yellow);
+            object-fit: cover;
+        }
+        .page-wrapper { 
+            display: flex; flex: 1; 
+            height: calc(100vh - 75px);
+        }
+        nav.sidebar {
+            width: var(--sidebar-width);
+            background: rgba(15, 23, 42, 0.3);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            padding: 30px 20px;
+            overflow-y: auto;
+        }
+        nav.sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        nav.sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        nav.sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        nav.sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        ul { list-style: none; }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #94a3b8;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .nav-group-title {
+            color: #e2e8f0;
+            padding: 12px 18px 4px 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: default;
+        }
+        .sub-menu {
+            padding-left: 20px;
+            margin-bottom: 8px;
+        }
+        .sub-link {
+            padding: 8px 18px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #64748b;
+            margin-bottom: 2px;
+        }
+        .nav-link:hover, .sub-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
+        }
+        .nav-link.active {
+            background: rgba(251, 246, 246, 0.993);
+            color: #020617;
+            border-left: 4px solid var(--accent-yellow);
+        }
+
+        /* Main Container Styling */
+        .main-container {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto; 
+        }
+        
+        /* Utility class to hide sections */
+        .hidden-section {
+            display: none;
+        }
+
+        section {
+            background: #eeeff218;
+            padding: 30px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .section-heading {
+            color: var(--accent-yellow);
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .pdf-wrapper {
+            position: relative;
+            cursor: zoom-in;
+            transition: transform 0.2s;
+        }
+        .pdf-wrapper:hover { border-color: var(--accent-yellow); }
+
+        .pdf-container {
+            width: 100%;
+            height: 70vh; /* Changed to scale dynamically with the screen height */
+            min-height: 400px; /* Prevents it from getting too small on tiny screens */
+            border-radius: 16px;
+            overflow: hidden;
+            background: #000;
+        }
+        .pdf-container:fullscreen {
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
+        }
+        .hint-text {
+            font-size: 0.6rem;
+            color: #475569;
+            margin-top: 8px;
+            text-align: center;
+        }
+        
+        /* Image container styling */
+        .image-container {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 70vh; /* Prevents the image from overflowing the screen */
+            object-fit: contain; /* Ensures the whole image stays visible */
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .image-container img {
+            width: 100%;
+            height: 80vh;   /* makes it large */
+            object-fit: contain;
+        }
+        #zoomImage {
+            width: 100%;
+            height: 80vh;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            cursor: zoom-in;
+       }
+ 
+       #zoomImage.zoomed {
+            transform: scale(2);   /* zoom level */
+            cursor: zoom-out;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-spacer"></div>
+        <div class="header-title">
+            <h1>Land Management System</h1>
+        </div>
+        <div class="user-profile">
+            <div style="text-align: right;">
+                <p style="font-weight: 800; font-size: 0.85rem;">Dogiparthi Sai Naga Piyush</p>
+                <p style="font-weight: 500; font-size: 0.7rem; color: #64748b;">ID: 24EU08079</p>
+            </div>
+            <img src="pic.jpg" alt="Admin" class="admin-photo">
+        </div>
+    </header>
+
+    <div class="page-wrapper">
+        <nav class="sidebar">
+            <ul>
+                <li><a onclick="switchTab('home')" id="nav-home" class="nav-link active">Home</a></li>
+                <li><a onclick="switchTab('abstract')" id="nav-abstract" class="nav-link">Abstract</a></li>
+                <li><a onclick="switchTab('relational')" id="nav-relational" class="nav-link">Relational Model</a></li>
+                <li>
+                    <div class="nav-group-title">DDL Commands</div>
+                    <ul class="sub-menu">
+                        <li><a href="#" class="nav-link sub-link">• Create</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Alter</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Drop</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="nav-group-title">DML Commands</div>
+                    <ul class="sub-menu">
+                        <li><a href="#" class="nav-link sub-link">• Insert</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Update</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Delete</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="nav-group-title">Aggregate Operators</div>
+                    <ul class="sub-menu">
+                        <li><a href="#" class="nav-link sub-link">• Sum</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Average</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Max</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Min</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Count</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" class="nav-link">Like operator</a></li>
+                <li><a href="#" class="nav-link">Groupby</a></li>
+                <li><a href="#" class="nav-link">Orderby</a></li>
+                <li><a href="#" class="nav-link">Having</a></li>
+                <li>
+                    <div class="nav-group-title">Nested Query</div>
+                    <ul class="sub-menu">
+                        <li><a href="#" class="nav-link sub-link">• In</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Not In</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Exists</a></li>
+                        <li><a href="#" class="nav-link sub-link">• All</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Any</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="nav-group-title">Integrity Constraints</div>
+                    <ul class="sub-menu">
+                        <li><a href="#" class="nav-link sub-link">• Null</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Not Null</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Unique</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Primary key</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Foreign Key</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Default</a></li>
+                        <li><a href="#" class="nav-link sub-link">• Index</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="main-container">
+            <section id="section-home">
+                <div class="section-heading">Milestones</div>
+                <div style="background: rgba(2, 6, 23, 0.4); border-radius: 1rem; margin-bottom: 1rem; padding: 1.25rem;">
+                    <h3 style="color: var(--accent-yellow); font-size: 0.9rem; margin-bottom: 5px;">WEEK 1: ABSTRACT</h3>
+                    <p style="font-size: 0.75rem; color: #94a3b8;">Strategic project boundaries defined.</p>
+                </div>
+                <div style="background: rgba(2, 6, 23, 0.4); border-radius: 1rem; padding: 1.25rem;">
+                    <h3 style="color: var(--accent-yellow); font-size: 0.9rem; margin-bottom: 5px;">WEEK 2: ER DIAGRAM</h3>
+                    <p style="font-size: 0.75rem; color: #94a3b8;">Relational database mapping complete.</p>
+                </div>
+            </section>
+
+            <section id="section-abstract" class="hidden-section">
+                <div class="section-heading">
+                    Abstract
+                    <span style="font-size: 0.65rem; color: #475569;">CLICK PREVIEW FOR FULLSCREEN</span>
+                </div>
+                
+                <div class="pdf-wrapper" onclick="toggleFullscreen()">
+                    <div id="pdfViewer" class="pdf-container">
+                        <iframe src="abstract.pdf#toolbar=0&view=Fit" width="100%" height="100%" frameborder="0"></iframe>
+                    </div>
+                </div>
+                <p class="hint-text">Press <strong>ESC</strong> to exit fullscreen mode.</p>
+            </section>
+
+            <section id="section-relational" class="hidden-section">
+                <div class="section-heading">
+                    Relational Model
+                    <span style="font-size: 0.65rem; color: #475569;">
+                        FULL IMAGE VIEW
+                    </span>
+                </div>
+                <div class="image-container">
+                    <img src="landManagement.png" alt="Relational Model Diagram" id="zoomImage" onclick="toggleZoom()">
+                </div>
+           </section>
+
+        </main>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.getElementById('section-home').style.display = 'none';
+            document.getElementById('section-abstract').style.display = 'none';
+            document.getElementById('section-relational').style.display = 'none'; 
+            
+            document.getElementById('nav-home').classList.remove('active');
+            document.getElementById('nav-abstract').classList.remove('active');
+            document.getElementById('nav-relational').classList.remove('active'); 
+
+            if (tabName === 'home') {
+                document.getElementById('section-home').style.display = 'block';
+                document.getElementById('nav-home').classList.add('active');
+            } else if (tabName === 'abstract') {
+                document.getElementById('section-abstract').style.display = 'block';
+                document.getElementById('nav-abstract').classList.add('active');
+            } else if (tabName === 'relational') { 
+                document.getElementById('section-relational').style.display = 'block';
+                document.getElementById('nav-relational').classList.add('active');
+            }
+        }
+
+        // Fullscreen Logic
+        function toggleFullscreen() {
+            const elem = document.getElementById('pdfViewer');
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) { /* Safari */
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { /* IE11 */
+                    elem.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+        function openImageFullscreen(img) {
+            if (img.requestFullscreen) {
+                 img.requestFullscreen();
+            }
+        }
+        function toggleZoom() {
+            const img = document.getElementById("zoomImage");
+            img.classList.toggle("zoomed");
+       }
+    </script>
+</body>
+</html>
